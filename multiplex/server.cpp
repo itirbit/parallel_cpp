@@ -7,6 +7,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
+
+#define POLL_SIZE 2048
 
 int set_nonblock(int fd)
 {
@@ -36,45 +39,51 @@ int main (int argc, char** argv)
 	
 	listen(masterSocket, SOMAXCONN);
 
+	struct pollfd set[POLL_SIZE];
+	set[0].fd = masterSocket;
+	set[0].events = POLLIN;
+
 	while(1)
 	{
-		fd_set set;
-		FD_ZERO(&set);
-		FD_SET(masterSocket, &set);
-		for(auto it = slaveSockets.begin(); it != slaveSockets.end(); ++it)
+		unsigned int index = 1;
+		for (auto it = slaveSockets.begin(); it != slaveSockets.end(); ++it)
 		{
-			FD_SET(*it, &set);
+			set[index].fd = *it;
+			set[index].events = POLLIN;
+			++index;
 		}
-		int max = std::max(masterSocket, *std::max_element(slaveSockets.begin(), slaveSockets.end()));
-		select(max+1, &set, NULL, NULL, NULL);
 
-		for (auto it = slaveSockets.begin(); it != slaveSockets.end(); )
+		unsigned int setSize = 1 + slaveSockets.size();
+
+		poll(set, setSize, -1);
+		
+		for (unsigned int i = 0; i < setSize; ++i)
 		{
-			if(FD_ISSET(*it, &set))
+			if(set[i].revents & POLLIN)
 			{
-				static char buffer[1024];
-				int recvSize = recv(*it, buffer, 1024, MSG_NOSIGNAL);
-				if (recvSize == 0 && (errno != EAGAIN))
+				if(i)
 				{
-					shutdown(*it, SHUT_RDWR);
-					it = slaveSockets.erase(it);
+					static char buffer[1024];
+					int recvSize = recv(set[i].fd, buffer, 1024, MSG_NOSIGNAL);
+					if ((recvSize == 0) && (errno != EAGAIN))
+					{
+						shutdown(set[i].fd, SHUT_RDWR);
+						close(set[i].fd);
+						slaveSockets.erase(set[i].fd);
+					}
+					else if (recvSize > 0)
+					{
+						send(set[i].fd, buffer, recvSize, MSG_NOSIGNAL);
+					}
 				}
-				else if (recvSize != 0)
+				else
 				{
-					send(*it, buffer, recvSize, MSG_NOSIGNAL);
-					++it;
+					int slaveSocket = accept(masterSocket,0,0);
+					set_nonblock(slaveSocket);
+					slaveSockets.insert(slaveSocket);
 				}
 			}
-			else 
-				++it;	
-		}
-		if (FD_ISSET(masterSocket, &set))
-		{
-			int slaveSocket = accept(masterSocket, 0, 0);
-			set_nonblock(slaveSocket);
-			slaveSockets.insert(slaveSocket);
 		}
 	}
-
 	return 0;
 }
