@@ -43,7 +43,7 @@ int main (int argc, char** argv)
 	set[0].fd = masterSocket;
 	set[0].events = POLLIN;
 
-	while(1)
+	while(true)
 	{
 		unsigned int index = 1;
 		for (auto it = slaveSockets.begin(); it != slaveSockets.end(); ++it)
