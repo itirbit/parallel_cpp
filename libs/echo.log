@@ -1,0 +1,23 @@
+/usr/bin/ld: /tmp/ccfauT5Z.o: in function `echo_read_cb':
+echo.c:(.text+0x1c): undefined reference to `bufferevent_get_input'
+/usr/bin/ld: echo.c:(.text+0x2c): undefined reference to `bufferevent_get_output'
+/usr/bin/ld: echo.c:(.text+0x3c): undefined reference to `evbuffer_get_length'
+/usr/bin/ld: echo.c:(.text+0x67): undefined reference to `evbuffer_copyout'
+/usr/bin/ld: echo.c:(.text+0x92): undefined reference to `evbuffer_add_buffer'
+/usr/bin/ld: /tmp/ccfauT5Z.o: in function `echo_event_cb':
+echo.c:(.text+0xde): undefined reference to `bufferevent_free'
+/usr/bin/ld: echo.c:(.text+0xf5): undefined reference to `bufferevent_free'
+/usr/bin/ld: /tmp/ccfauT5Z.o: in function `accept_conn_cb':
+echo.c:(.text+0x122): undefined reference to `evconnlistener_get_base'
+/usr/bin/ld: echo.c:(.text+0x13c): undefined reference to `bufferevent_socket_new'
+/usr/bin/ld: echo.c:(.text+0x165): undefined reference to `bufferevent_setcb'
+/usr/bin/ld: echo.c:(.text+0x176): undefined reference to `bufferevent_enable'
+/usr/bin/ld: /tmp/ccfauT5Z.o: in function `accept_error_cb':
+echo.c:(.text+0x199): undefined reference to `evconnlistener_get_base'
+/usr/bin/ld: echo.c:(.text+0x1e3): undefined reference to `event_base_loopexit'
+/usr/bin/ld: /tmp/ccfauT5Z.o: in function `main':
+echo.c:(.text+0x216): undefined reference to `event_base_new'
+/usr/bin/ld: echo.c:(.text+0x292): undefined reference to `evconnlistener_new_bind'
+/usr/bin/ld: echo.c:(.text+0x2b3): undefined reference to `evconnlistener_set_error_cb'
+/usr/bin/ld: echo.c:(.text+0x2c2): undefined reference to `event_base_dispatch'
+collect2: error: ld returned 1 exit status
