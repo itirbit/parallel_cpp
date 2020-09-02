@@ -6,23 +6,30 @@
 uv_tcp_t server;
 uv_loop_t *loop;
 
+typedef struct
+{
+	uv_write_t req;
+	uv_buf_t buf;
+} write_req_t;
+
 void read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf)
 {	
 	uv_write_t *req = (uv_write_t*) malloc(sizeof(uv_write_t));
+	if (nread > 0)
+	{
+		write_req_t *req = (write_req_t*) malloc(sizeof(write_req_t));
+		req->buf = uv_buf_init(buf->base, nread);
+		uv_write((uv_write_t*)req, stream, &req->buf, 1, NULL);
+		return;
+	}
 	if (nread < 0)
 	{
-		if ((nread & UV_EOF) != 0)
+		if (nread != UV_EOF) 
 		{
-			fprintf(stderr, "Error on reading stream\n");
+			fprintf(stderr, "Read error %s\n", uv_err_name(nread));
 		}
 		uv_close((uv_handle_t*)stream, NULL);
 	}
-	uv_buf_t buf_write;
-	buf_write.base = malloc(sizeof(char)* nread);
-	buf_write.len = nread;
-	memcpy(buf_write.base, buf->base, nread);
-	int r = uv_write(req, stream, &buf_write, 1, NULL);
-	free(buf_write.base);
 	free(buf->base);
 }
 
