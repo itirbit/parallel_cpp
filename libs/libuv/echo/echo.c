@@ -1,6 +1,7 @@
 #include <uv.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 uv_tcp_t server;
 uv_loop_t *loop;
@@ -8,7 +9,20 @@ uv_loop_t *loop;
 void read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf)
 {	
 	uv_write_t *req = (uv_write_t*) malloc(sizeof(uv_write_t));
-	uv_write(req, stream, buf, 1, NULL);
+	if (nread < 0)
+	{
+		if ((nread & UV_EOF) != 0)
+		{
+			fprintf(stderr, "Error on reading stream\n");
+		}
+		uv_close((uv_handle_t*)stream, NULL);
+	}
+	uv_buf_t buf_write;
+	buf_write.base = malloc(sizeof(char)* nread);
+	buf_write.len = nread;
+	memcpy(buf_write.base, buf->base, nread);
+	int r = uv_write(req, stream, &buf_write, 1, NULL);
+	free(buf_write.base);
 	free(buf->base);
 }
 
