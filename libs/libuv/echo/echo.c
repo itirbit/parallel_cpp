@@ -5,11 +5,11 @@
 uv_tcp_t server;
 uv_loop_t *loop;
 
-void read_cb(uv_stream_t* stream, ssize_t nread, uv_buf_t buf)
+void read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf)
 {	
 	uv_write_t *req = (uv_write_t*) malloc(sizeof(uv_write_t));
-	uv_write(req, stream, &buf, 1, NULL);
-	free(buf.base);
+	uv_write(req, stream, buf, 1, NULL);
+	free(buf->base);
 }
 
 void alloc_buffer(uv_handle_t *handle, size_t size, uv_buf_t* buf)
