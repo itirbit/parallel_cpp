@@ -43,6 +43,25 @@ void sendCommand(std::string command, std::string param)
 	close(pfd[0]);
 }
 
+std::string trim(std::string str)
+{
+	std::string result = str;
+	const std::string spaces = " \t\f\v\n\r";
+	std::string::size_type pos = result.find_first_not_of(spaces);
+	if (pos != std::string::npos)
+	{
+		result.erase(0, pos);
+	}
+	
+	pos = result.find_last_not_of(spaces);
+	if (pos != std::string::npos)
+	{
+		result.erase(pos + 1);
+	}
+
+	return result;
+}
+
 std::vector<std::pair<std::string, std::string>>
 getCommands()
 {
@@ -53,30 +72,24 @@ getCommands()
 	buffer[size] = '\0';
 	std::istringstream ss(buffer);
 
-	auto f = [](char c){return std::isspace(static_cast<unsigned char>(c));};
-	std::vector<std::string> vec;
 	std::string input;
 	while(std::getline(ss, input, '|'))
 	{
-		input.erase(std::remove_if(input.begin(), input.end(), f), input.end());
-		vec.push_back(input);
-	}
-	
-	for (auto s : vec)
-	{
-		auto pos = s.find('-');
+		input = trim(input);
+		std::string command;
+		std::string argc;
+		auto pos = input.find_first_of(' ');
 		if (pos != std::string::npos)
 		{
-			std::string param = s.substr(pos);
-			std::string command = s.substr(0, pos);
-			result.push_back({command, param});
+			command = input.substr(0, pos);
+			argc = input.substr(pos + 1, input.length() - pos - 1);
 		}
 		else
 		{
-			result.push_back({s,""});
+			command = input;
 		}
-	}
-	
+		result.push_back({command, argc});
+	}	
 	return result;
 }
 
