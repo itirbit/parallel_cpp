@@ -98,8 +98,12 @@ int main (int argc, char** argv)
 					close(events[i].data.fd);
 				}
 				else if(recvSize > 0)
-				{
-					send(events[i].data.fd, buffer, recvSize, MSG_NOSIGNAL);
+				{					
+					for (auto s : slaveSockets)
+					{
+						if (s != events[i].data.fd)
+							send(s, buffer, recvSize, MSG_NOSIGNAL);
+					}
 				}
 			}
 		}
