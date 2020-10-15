@@ -78,7 +78,9 @@ int main (int argc, char** argv)
 				std::string msg = "connected " + getSockName(slaveSocket) + "\n";
 				for (auto s : slaveSockets)
 				{
+					std::string msgb = "connected " + getSockName(s) + "\n";
 					send(s, msg.data(), msg.size(), MSG_NOSIGNAL);
+					send(slaveSocket, msgb.data(), msgb.size(), MSG_NOSIGNAL);
 				}
 				slaveSockets.insert(slaveSocket);
 			}
