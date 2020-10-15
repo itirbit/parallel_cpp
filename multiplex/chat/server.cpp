@@ -101,7 +101,7 @@ int main (int argc, char** argv)
 				}
 				else if(recvSize > 0)
 				{						
-					auto msg = "command " + getSockName(events[i].data.fd) + " " + std::string(buffer, recvSize) + "\n";
+					auto msg = "command " + std::to_string(events[i].data.fd) + " " + std::string(buffer, recvSize) + "\n";
 					for (auto s : slaveSockets)
 					{
 						if (s != events[i].data.fd)
