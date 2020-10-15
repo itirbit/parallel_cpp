@@ -105,7 +105,7 @@ int main (int argc, char** argv)
 					for (auto s : slaveSockets)
 					{
 						if (s != events[i].data.fd)
-							send(s, buffer, recvSize, MSG_NOSIGNAL);
+							send(s, msg.data(), msg.size(), MSG_NOSIGNAL);
 					}
 				}
 			}
