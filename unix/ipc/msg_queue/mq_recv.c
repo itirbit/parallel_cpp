@@ -22,6 +22,9 @@ int main(int argc, char** argv)
 	{
 		sleep(10);
 		mq_receive(mqd, buff, sizeof(buff),0);
+		FILE* f = fopen("tmp/message.txt", "w+");
+		fputs(buff, f);
+		fclose(f);
 		printf("message: %s\n",buff);
 	}
 	//mq_close(mqd);
