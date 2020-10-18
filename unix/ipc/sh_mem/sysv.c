@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 		perror("failed shmget");
 		return 1;
 	}
-	void* mem = shmat(shmId, NULL, 0);
+	char* mem = shmat(shmId, NULL, 0);
 	if (*(int*)mem == -1)
 	{
 		perror("failed shmat");
@@ -21,10 +21,10 @@ int main(int argc, char** argv)
 	}
 	memset(mem, (char)42, 1024*1024);
 	
-	for (int i = 0; i < 1024*1024; ++i)
-	{
-		printf("%d", ((char*) mem)[i]);
-	}
+//	for (int i = 0; i < 1024*1024; ++i)
+//	{
+//		printf("%d", ((char*) mem)[i]);
+//	}
 	return 0;
 }
 
