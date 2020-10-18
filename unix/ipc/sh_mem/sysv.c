@@ -19,12 +19,12 @@ int main(int argc, char** argv)
 		perror("failed shmat");
 		return 1;
 	}
-	memset(mem, 42, 1024*1024);
+	memset(mem, (char)42, 1024*1024);
 	
-	//for (int i = 0; i < 1024*1024; ++i)
-	//{
-	//	printf("%d", ((int*) mem)[i]);
-	//}
+	for (int i = 0; i < 1024*1024; ++i)
+	{
+		printf("%d", ((char*) mem)[i]);
+	}
 	return 0;
 }
 
