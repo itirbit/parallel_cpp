@@ -13,12 +13,13 @@ int main(int argc, char** argv)
 		perror("failed semget");
 		return 1;
 	}
-	struct sembuf sbuf[1];
+	struct sembuf sbuf[16];
 	for(int i=0; i<16; ++i)
 	{
-		sbuf[0].sem_num = i;
-		sbuf[0].sem_op = i;
-		semop(semId, sbuf, 1);
+		sbuf[i].sem_num = i;
+		sbuf[i].sem_op = i;
+		sbuf[i].sem_flg = 0;
 	}
+	semop(semId, sbuf, 16);
 	return 0;
 }
