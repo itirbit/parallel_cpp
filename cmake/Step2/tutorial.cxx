@@ -3,11 +3,11 @@
 #include <iostream>
 #include <string>
 
+#include "TutorialConfig.h"
+
 #ifdef USE_MYMATH
 #include "MathFunctions.h"
 #endif
-
-#include "TutorialConfig.h"
 
 int main(int argc, char* argv[])
 {
