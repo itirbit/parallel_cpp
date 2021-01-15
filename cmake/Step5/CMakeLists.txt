@@ -12,13 +12,29 @@ option(USE_MYMATH "Use tutorial provided math implementation" ON)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
-configure_file(TutorialConfig.h.in TutorialConfig.h)
 
 # add the MathFunctions library
 if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
 endif()
+
+include(CheckSymbolExists)
+check_symbol_exists(log "math.h" HAVE_LOG)
+check_symbol_exists(exp "math.h" HAVE_EXP)
+if(NOT (HAVE_LOG AND HAVE_EXP))
+	unset(HAVE_LOG CACHE)
+	unset(HAVE_EXP CACHE)
+	set(CMAKE_REQUIRED_LIBRARIES "m")
+	check_symbol_exists(log "math.h" HAVE_LOG)
+	check_symbol_exists(exp "math.h" HAVE_EXP)
+	if(HAVE_LOG AND HAVE_EXP)
+		target_link_libraries(MathFunctions PRIVATE m)
+	endif()
+endif()
+
+
+configure_file(TutorialConfig.h.in TutorialConfig.h)
 
 # add the executable
 add_executable(Tutorial tutorial.cxx)
